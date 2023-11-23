@@ -1,0 +1,8 @@
+sudo -u postgres psql
+CREATE DATABASE data_tool;
+CREATE USER data_tool_user WITH PASSWORD 'Zz@12345';
+ALTER ROLE data_tool_user SET client_encoding TO 'utf8';
+ALTER ROLE data_tool_user SET default_transaction_isolation TO 'read committed';
+ALTER ROLE data_tool_user SET timezone TO 'UTC';
+GRANT ALL PRIVILEGES ON DATABASE data_tool TO data_tool_user;
+ALTER USER data_tool_user CREATEDB;
