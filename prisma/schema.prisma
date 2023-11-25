@@ -1,0 +1,89 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Database {
+  id          Int     @id @default(autoincrement())
+  orderNum    Int     @default(0)
+  name        String
+  forms       Form[]
+}
+
+model Dictionary {
+  id          Int     @id @default(autoincrement())
+  name        String
+}
+
+model Form {
+  id          Int       @id @default(autoincrement())
+  database    Database  @relation(fields: [databaseId], references: [id])
+  databaseId  Int
+  orderNum    Int       @default(0)
+  name        String
+  groups      Group[]
+  converters  Converter[]
+}
+
+model Group {
+  id          Int     @id @default(autoincrement())
+  form        Form    @relation(fields: [formId], references: [id])
+  formId      Int
+  orderNum    Int     @default(0)
+  name        String
+  isMulty     Boolean @default(false)
+  fields      Field[]
+}
+
+model Field {
+  id          Int     @id @default(autoincrement())
+  group       Group   @relation(fields: [groupId], references: [id])
+  groupId     Int
+  orderNum    Int     @default(0)
+  name        String
+  formType    String
+  len         Int
+  isKey       Boolean @default(false)
+  isVisible   Boolean @default(false)
+  isEnable    Boolean @default(false)
+  isRequire   Boolean @default(false)
+  precision   Int
+  isDuplicate Boolean @default(false)
+}
+
+model Report {
+  id          Int     @id @default(autoincrement())
+  name        String
+  orderNum    Int     @default(0)
+  data        Json
+}
+
+model Converter {
+  id          Int     @id @default(autoincrement())
+  form        Form    @relation(fields: [formId], references: [id])
+  formId      Int
+  orderNum    Int     @default(0)
+  data        Json
+}
+
+model User {
+  id          Int     @id @default(autoincrement())
+  firstName   String?
+  lastName    String?
+  middleName  String?
+  department  Department[]
+}
+
+model Department {
+  id          Int     @id @default(autoincrement())
+  user        User    @relation(fields: [userId], references: [id])
+  userId      Int
+  name        String
+}
