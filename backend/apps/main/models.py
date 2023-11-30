@@ -1,317 +1,51 @@
+# This is an auto-generated Django model module.
+# You'll have to do the following manually to clean this up:
+#   * Rearrange models' order
+#   * Make sure each model has one field with primary_key=True
+#   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
+#   * Remove `managed = True` lines if you wish to allow Django to create, modify, and delete the table
+# Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
 
 
-class Department(models.Model):
-    """Department model"""
-
-    title = models.CharField(
-        verbose_name='наименование',
-        max_length=200,
-        unique=True
-    )
-
-    def __str__(self):
-        return self.title
-
-    class Meta:
-        verbose_name = 'подразделение',
-        verbose_name_plural = 'подразделения'
-
-
-class Dictionary(models.Model):
-    """Dictionary model"""
-
-    title = models.CharField(
-        verbose_name='наименование',
-        max_length=200
-    )
-
-    table_name = models.CharField(
-        verbose_name='имя таблицы',
-        max_length=50
-    )
-
-    def __str__(self):
-        return self.title
+class Documents(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    is_active = models.BooleanField()
+    old_id = models.BigIntegerField(blank=True, null=True)
+    date_start = models.DateTimeField(blank=True, null=True)
+    date_end = models.DateTimeField(blank=True, null=True)
+    created_at = models.DateTimeField()
+    created_user = models.CharField(max_length=150)
+    changed_at = models.DateTimeField()
+    changed_user = models.CharField(max_length=150)
 
     class Meta:
-        verbose_name = 'справочник',
-        verbose_name_plural = 'справочники'
+        managed = True
+        db_table = 'documents'
 
 
-class Database(models.Model):
-    """Database model"""
-
-    order = models.PositiveSmallIntegerField(
-        verbose_name='порядковый номер',
-        default=0
-    )
-
-    title = models.CharField(
-        verbose_name='наименование',
-        max_length=200
-    )
-
-    def __str__(self):
-        return self.title
+class Country(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    title = models.TextField()
+    is_enable = models.BooleanField()
 
     class Meta:
-        verbose_name = 'база данных',
-        verbose_name_plural = 'базы данных'
-        ordering = (
-            '-order',
-        )
+        managed = True
+        db_table = 'country'
 
 
-class Form(models.Model):
-    """Form model"""
-
-    FORM_TYPE = [
-        ('input_form', 'Форма для ввода информации'),
-        ('search_form', 'Форма для поиска информации'),
-    ]
-
-    order = models.PositiveSmallIntegerField(
-        verbose_name='порядковый номер',
-        default=0
-    )
-
-    title = models.CharField(
-        verbose_name='наименование',
-        max_length=200
-    )
-
-    db = models.ForeignKey(
-        verbose_name='база данных',
-        to=Database,
-        on_delete=models.RESTRICT,
-        related_name='forms'
-    )
-
-    form_type = models.CharField(
-        verbose_name='тип формы',
-        max_length=15,
-        choices=FORM_TYPE
-    )
-
-    def __str__(self):
-        return self.title
+class Asb(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    doc = models.ForeignKey(Documents, models.DO_NOTHING, blank=True, null=True)
+    lst = models.SmallIntegerField()
+    vt = models.TimeField(blank=True, null=True)
+    dt = models.DateField(blank=True, null=True)
+    p1 = models.DecimalField(max_digits=3, decimal_places=0, blank=True, null=True)
+    country = models.BigIntegerField(blank=True, null=True)
+    age = models.IntegerField(blank=True, null=True)
+    im = models.CharField(max_length=50, blank=True, null=True)
+    fam = models.CharField(max_length=35, blank=True, null=True)
 
     class Meta:
-        verbose_name = 'форма',
-        verbose_name_plural = 'формы'
-        ordering = (
-            '-order',
-        )
-
-
-class Group(models.Model):
-    """Group model"""
-
-    order = models.PositiveSmallIntegerField(
-        verbose_name='порядковый номер',
-        default=0
-    )
-
-    title = models.CharField(
-        verbose_name='наименование',
-        max_length=200
-    )
-
-    form = models.ForeignKey(
-        verbose_name='форма',
-        to=Form,
-        on_delete=models.RESTRICT,
-        related_name='groups'
-    )
-
-    is_multy = models.BooleanField(
-        verbose_name='мультигруппа',
-        default=False
-    )
-
-    table_name = models.CharField(
-        verbose_name='имя таблицы',
-        max_length=50
-    )
-
-    def __str__(self):
-        return f'{self.form.title}: {self.title}'
-
-    class Meta:
-        verbose_name = 'группа',
-        verbose_name_plural = 'группы'
-        ordering = (
-            '-order',
-        )
-
-
-class Field(models.Model):
-    """Field model"""
-
-    FIELD_TYPE = [
-        ('text', 'Простой текст без ограничений'),
-        ('number', 'Целое число'),
-        ('cyrillic', 'Только кириллица'),
-        ('dict', 'Справочное значение'),
-    ]
-
-    order = models.PositiveSmallIntegerField(
-        verbose_name='порядковый номер',
-        default=0
-    )
-
-    title = models.CharField(
-        verbose_name='наименование',
-        max_length=200
-    )
-
-    group = models.ForeignKey(
-        verbose_name='группа',
-        to=Group,
-        on_delete=models.RESTRICT,
-        related_name='fields'
-    )
-
-    field_name = models.CharField(
-        verbose_name='имя поля',
-        max_length=50
-    )
-
-    field_type = models.CharField(
-        verbose_name='тип поля',
-        max_length=15,
-        choices=FIELD_TYPE
-    )
-
-    len = models.PositiveIntegerField(
-        verbose_name='длина',
-        default=0
-    )
-
-    is_key = models.BooleanField(
-        verbose_name='ключевое поле',
-        default=False
-    )
-
-    is_visible = models.BooleanField(
-        verbose_name='видимость',
-        default=False
-    )
-
-    is_enable = models.BooleanField(
-        verbose_name='доступен',
-        default=False
-    )
-
-    is_require = models.BooleanField(
-        verbose_name='обязательный ввод',
-        default=False
-    )
-
-    precision = models.PositiveIntegerField(
-        verbose_name='точность',
-        default=0
-    )
-
-    is_duplicate = models.BooleanField(
-        verbose_name='создать дубликат',
-        default=False
-    )
-
-    def __str__(self):
-        return self.title
-
-    class Meta:
-        verbose_name = 'поле',
-        verbose_name_plural = 'поля'
-        ordering = (
-            '-order',
-        )
-
-
-class Report(models.Model):
-    """Report model"""
-
-    order = models.PositiveSmallIntegerField(
-        verbose_name='порядковый номер',
-        default=0
-    )
-
-    title = models.CharField(
-        verbose_name='наименование',
-        max_length=200
-    )
-
-    template = models.FileField(
-        verbose_name='шаблон',
-        upload_to='templates/',
-        null=True,
-        blank=True
-    )
-
-    data = models.JSONField(
-        verbose_name='json',
-        null=True,
-        blank=True
-    )
-
-    db = models.ForeignKey(
-        verbose_name='база данных',
-        to=Database,
-        on_delete=models.RESTRICT,
-        related_name='reports'
-    )
-
-    def __str__(self):
-        return self.title
-
-    class Meta:
-        verbose_name = 'отчет',
-        verbose_name_plural = 'отчеты'
-        ordering = (
-            '-order',
-        )
-
-
-class Converter(models.Model):
-    """Converter model"""
-
-    order = models.PositiveSmallIntegerField(
-        verbose_name='порядковый номер',
-        default=0
-    )
-
-    title = models.CharField(
-        verbose_name='наименование',
-        max_length=200
-    )
-
-    form = models.OneToOneField(
-        verbose_name='форма',
-        to=Form,
-        on_delete=models.RESTRICT
-    )
-
-    data = models.JSONField(
-        verbose_name='json',
-        null=True,
-        blank=True
-    )
-
-    db = models.ForeignKey(
-        verbose_name='база данных',
-        to=Database,
-        on_delete=models.RESTRICT,
-        related_name='converters'
-    )
-
-    def __str__(self):
-        return self.title
-
-    class Meta:
-        verbose_name = 'конвертор',
-        verbose_name_plural = 'конверторы'
-        ordering = (
-            '-order',
-        )
+        managed = True
+        db_table = 'asb'

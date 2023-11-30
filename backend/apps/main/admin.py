@@ -1,67 +1,42 @@
 from django.contrib import admin
-from .models import (
-    Department,
-    Dictionary,
-    Database,
-    Form,
-    Group,
-    Field,
-    Report,
-    Converter
+from .models import *
+
+
+class DocumentsAdmin(admin.ModelAdmin):
+    list_display = (
+        'is_active',
+        'old_id',
+        'date_start',
+        'date_end',
+        'created_at',
+        'created_user',
+        'changed_at',
+        'changed_user'
 )
 
 
-class DictionaryAdmin(admin.ModelAdmin):
-    """Dictionary admin"""
-
+class CountryAdmin(admin.ModelAdmin):
     list_display = (
+        'id',
         'title',
-        'table_name'
-    )
-
-
-class GroupAdmin(admin.ModelAdmin):
-    """Group admin"""
-
-    list_display = (
-        'title',
-        'is_multy',
-        'table_name'
-    )
-
-
-class FieldAdmin(admin.ModelAdmin):
-    """Field admin"""
-
-    list_display = (
-        'order',
-        'group',
-        'title',
-        'field_name',
-        'field_type',
-        'len',
-        'is_key',
-        'is_visible',
         'is_enable',
-        'is_require',
-        'precision',
-        'is_duplicate'
     )
 
-    list_display_links = (
-        'group',
-        'title',
-        'field_type',
+
+
+class AsbAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'vt',
+        'dt',
+        'p1',
+        'country',
+        'age',
+        'im',
+        'fam',
     )
 
-    ordering = ('order', )
+admin.site.register(Documents, DocumentsAdmin)
+admin.site.register(Country, CountryAdmin)
+admin.site.register(Asb, AsbAdmin)
 
-
-admin.site.register(Department)
-admin.site.register(Dictionary, DictionaryAdmin)
-admin.site.register(Database)
-admin.site.register(Form)
-admin.site.register(Group)
-admin.site.register(Field, FieldAdmin)
-admin.site.register(Report)
-admin.site.register(Converter)

@@ -5,7 +5,7 @@ from django.contrib.auth.models import (
     PermissionsMixin
 )
 from django.core.exceptions import ValidationError
-from main.models import Department
+from metadata.models import Department
 
 
 class MyUserManager(BaseUserManager):

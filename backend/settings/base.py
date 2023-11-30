@@ -31,6 +31,7 @@ DJANGO_APPS = [
 
 PROJECT_APPS = [
     'auths.apps.AuthsConfig',
+    'metadata.apps.MetadataConfig',
     'main.apps.MainConfig',
 ]
 

@@ -1,17 +1,10 @@
-from django.urls import path
 from rest_framework import routers
-from .views import (
-    DictionaryViewSet,
-    DatabaseViewSet,
-    GenerateView
-)
+from .views import *
 
 router = routers.SimpleRouter()
-router.register(r'dictionaries', DictionaryViewSet)
-router.register(r'databases', DatabaseViewSet)
+router.register(r'documents', DocumentsViewSet)
+router.register(r'country', CountryViewSet)
+router.register(r'asb', AsbViewSet)
 
-urlpatterns = [
-    path('generate_db', GenerateView.as_view())
-]
+urlpatterns = router.urls
 
-urlpatterns += router.urls
