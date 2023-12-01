@@ -42,7 +42,7 @@ class Dictionary(models.Model):
 class Database(models.Model):
     """Database model"""
 
-    num = models.PositiveSmallIntegerField(
+    pos = models.PositiveSmallIntegerField(
         verbose_name='№',
         default=0
     )
@@ -52,14 +52,18 @@ class Database(models.Model):
         max_length=200
     )
 
+    struct = models.JSONField(
+        verbose_name='структура бд',
+    )
+
     def __str__(self):
-        return self.title
+        return f"{self.pos}. {self.title}"
 
     class Meta:
         verbose_name = 'база данных',
         verbose_name_plural = 'базы данных'
         ordering = (
-            '-num',
+            '-pos',
         )
 
 
@@ -71,7 +75,7 @@ class Form(models.Model):
         ('search_form', 'Форма для поиска информации'),
     ]
 
-    num = models.PositiveSmallIntegerField(
+    pos = models.PositiveSmallIntegerField(
         verbose_name='№',
         default=0
     )
@@ -95,20 +99,20 @@ class Form(models.Model):
     )
 
     def __str__(self):
-        return self.title
+        return f"{self.pos}. {self.title} ({self.form_type})"
 
     class Meta:
         verbose_name = 'форма',
         verbose_name_plural = 'формы'
         ordering = (
-            '-num',
+            '-pos',
         )
 
 
 class Group(models.Model):
     """Group model"""
 
-    num = models.PositiveSmallIntegerField(
+    pos = models.PositiveSmallIntegerField(
         verbose_name='№',
         default=0
     )
@@ -136,13 +140,13 @@ class Group(models.Model):
     )
 
     def __str__(self):
-        return f'{self.form.title}: {self.title}'
+        return f'{self.form}->{self.pos}. {self.title}'
 
     class Meta:
         verbose_name = 'группа',
         verbose_name_plural = 'группы'
         ordering = (
-            '-num',
+            '-pos',
         )
 
 
@@ -161,7 +165,7 @@ class Field(models.Model):
         ('timestamp', 'Дата и время'),
     ]
 
-    num = models.PositiveSmallIntegerField(
+    pos = models.PositiveSmallIntegerField(
         verbose_name='№',
         default=0
     )
@@ -233,20 +237,50 @@ class Field(models.Model):
     )
 
     def __str__(self):
-        return self.title
+        return f"{self.group}->{self.pos}. {self.title}"
 
     class Meta:
         verbose_name = 'поле',
         verbose_name_plural = 'поля'
         ordering = (
-            '-num',
+            '-pos',
+        )
+
+
+class FindField(models.Model):
+    """FindField model"""
+    pos = models.PositiveSmallIntegerField(
+        verbose_name='№',
+        default=0
+    )
+
+    title = models.CharField(
+        verbose_name='наименование',
+        max_length=200
+    )
+
+    field = models.ForeignKey(
+        verbose_name='поле',
+        to=Field,
+        on_delete=models.RESTRICT,
+        related_name='find_fields'
+    )
+
+    def __str__(self):
+        return f"{self.pos}. {self.title}"
+
+    class Meta:
+        verbose_name = 'поле для поиска',
+        verbose_name_plural = 'поля для поиска'
+        ordering = (
+            '-pos',
         )
 
 
 class Report(models.Model):
     """Report model"""
 
-    num = models.PositiveSmallIntegerField(
+    pos = models.PositiveSmallIntegerField(
         verbose_name='№',
         default=0
     )
@@ -283,14 +317,14 @@ class Report(models.Model):
         verbose_name = 'отчет',
         verbose_name_plural = 'отчеты'
         ordering = (
-            '-num',
+            '-pos',
         )
 
 
 class Converter(models.Model):
     """Converter model"""
 
-    num = models.PositiveSmallIntegerField(
+    pos = models.PositiveSmallIntegerField(
         verbose_name='№',
         default=0
     )
@@ -326,5 +360,5 @@ class Converter(models.Model):
         verbose_name = 'конвертор',
         verbose_name_plural = 'конверторы'
         ordering = (
-            '-num',
+            '-pos',
         )

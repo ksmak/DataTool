@@ -57,24 +57,24 @@ class MainTest(TestCase):
 
     def test_database_list(self):
         db = Database.objects.create(
-            num=1,
+            pos=1,
             title='Test Database'
         )
         form = Form.objects.create(
-            num=1,
+            pos=1,
             title='Test Form',
             db=db,
             form_type=Form.FORM_TYPE[0][0]
         )
         group = Group.objects.create(
-            num=1,
+            pos=1,
             title='Test Group',
             form=form,
             is_multy=True,
             table_name='Group Model'
         )
         Field.objects.create(
-            num=1,
+            pos=1,
             title='Test Field',
             group=group,
             field_type=Field.FIELD_TYPE[0][0],
@@ -88,13 +88,13 @@ class MainTest(TestCase):
             is_duplicate=True
         )
         Report.objects.create(
-            num=1,
+            pos=1,
             title='Test Report',
             data={'data': 123},
             db=db
         )
         Converter.objects.create(
-            num=1,
+            pos=1,
             title='Test Converter',
             form=form,
             data={'data': 456},
@@ -104,25 +104,25 @@ class MainTest(TestCase):
         excepted_data = [
             {
                 'id': ANY,
-                'num': 1,
+                'pos': 1,
                 'title': 'Test Database',
                 'forms': [
                     {
                         'id': ANY,
-                        'num': 1,
+                        'pos': 1,
                         'title': 'Test Form',
                         'form_type': Form.FORM_TYPE[0][0],
                         'groups': [
                             {
                                 'id': ANY,
-                                'num': 1,
+                                'pos': 1,
                                 'title': 'Test Group',
                                 'is_multy': True,
                                 'table_name': 'Group Model',
                                 'fields': [
                                     {
                                         'id': ANY,
-                                        'num': 1,
+                                        'pos': 1,
                                         'group': group.id,
                                         'title': 'Test Field',
                                         'field_type': Field.FIELD_TYPE[0][0],
@@ -143,7 +143,7 @@ class MainTest(TestCase):
                 'reports': [
                     {
                         'id': ANY,
-                        'num': 1,
+                        'pos': 1,
                         'title': 'Test Report',
                         'data': {'data': 123},
                         'template': ANY,
@@ -153,7 +153,7 @@ class MainTest(TestCase):
                 'converters': [
                     {
                         'id': ANY,
-                        'num': 1,
+                        'pos': 1,
                         'title': 'Test Converter',
                         'form': ANY,
                         'data': {'data': 456},

@@ -44,7 +44,7 @@ class GroupSerializer(serializers.ModelSerializer):
         model = Group
         fields = (
             'id',
-            'num',
+            'pos',
             'title',
             'is_multy',
             'table_name',
@@ -61,7 +61,7 @@ class FormSerializer(serializers.ModelSerializer):
         model = Form
         fields = (
             'id',
-            'num',
+            'pos',
             'title',
             'form_type',
             'groups',
@@ -79,7 +79,7 @@ class DatabaseSerializer(serializers.ModelSerializer):
         model = Database
         fields = (
             'id',
-            'num',
+            'pos',
             'title',
             'forms',
             'reports',
