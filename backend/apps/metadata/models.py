@@ -145,9 +145,6 @@ class Group(models.Model):
     class Meta:
         verbose_name = 'группа',
         verbose_name_plural = 'группы'
-        ordering = (
-            '-pos',
-        )
 
 
 class Field(models.Model):
@@ -242,9 +239,6 @@ class Field(models.Model):
     class Meta:
         verbose_name = 'поле',
         verbose_name_plural = 'поля'
-        ordering = (
-            '-pos',
-        )
 
 
 class FindField(models.Model):

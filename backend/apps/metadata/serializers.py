@@ -38,7 +38,7 @@ class FieldSerializer(serializers.ModelSerializer):
 class GroupSerializer(serializers.ModelSerializer):
     """Group serializer"""
 
-    fields = FieldSerializer(many=True)
+    fields = serializers.SerializerMethodField()
 
     class Meta:
         model = Group
@@ -48,14 +48,18 @@ class GroupSerializer(serializers.ModelSerializer):
             'title',
             'is_multy',
             'table_name',
-            'fields'
+            'fields2'
         )
+
+    def get_fields(self, instance):
+        fields = instance.fields.all().order_by("-pos")
+        return FieldSerializer(fields, many=True).data
 
 
 class FormSerializer(serializers.ModelSerializer):
     """Form serializer"""
 
-    groups = GroupSerializer(many=True)
+    groups = serializers.SerializerMethodField()
 
     class Meta:
         model = Form
@@ -66,6 +70,10 @@ class FormSerializer(serializers.ModelSerializer):
             'form_type',
             'groups',
         )
+
+    def get_groups(self, instance):
+        groups = instance.groups.all().order_by("-pos")
+        return GroupSerializer(groups, many=True).data
 
 
 class DatabaseSerializer(serializers.ModelSerializer):

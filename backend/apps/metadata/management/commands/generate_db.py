@@ -6,10 +6,12 @@ from django.db import connection
 
 from metadata.models import (
     Dictionary,
+    Database,
     Form,
     Group,
     Field,
 )
+from metadata.serializers import DatabaseSerializer
 
 
 class Command(BaseCommand):
@@ -17,6 +19,7 @@ class Command(BaseCommand):
 
     help = 'Генерация структуры базы данных.'
 
+    MIGRATIONS_DIR = 'apps/main/migrations/'
     MODELS_FILE = 'apps/main/models.py'
     SERIALIZERS_FILE = 'apps/main/serializers.py'
     VIEWS_FILE = 'apps/main/views.py'
@@ -141,9 +144,10 @@ class Command(BaseCommand):
         with open(file_name, 'w') as file:
             file.write(filedata)
 
-    def init_models(self, file_name: str, dicts: str, tbls: str) -> None:
+    def init_models(self, file_name: str, dicts: list, tbls: list) -> None:
+        models = (" ").join((*dicts, *tbls))
         os.system(
-            f"python3 manage.py inspectdb documents {dicts} {tbls} > {file_name}")
+            f"python3 manage.py inspectdb documents {models} > {file_name}")
 
         os.system("python3 manage.py makemigrations main")
         os.system("python3 manage.py migrate main")
@@ -153,58 +157,56 @@ class Command(BaseCommand):
         os.system("python3 manage.py makemigrations main")
         os.system("python3 manage.py migrate main")
 
-    def init_serializers(self, file_name: str, dicts: str, tbls: str) -> None:
-        models = (" ").join(
-            ['Documents', dicts.capitalize(), tbls.capitalize()]).split()
+    def init_serializers(self, file_name: str, dicts: list, tbls: list) -> None:
+        models = ('Documents', *dicts, *tbls)
         lines = []
         lines.append('from rest_framework import serializers\n')
         lines.append('from .models import *\n')
         for model in models:
             lines.append(
-                f'\n\nclass {model}Serializer(serializers.ModelSerializer):\n')
+                f'\n\nclass {model.capitalize()}Serializer(serializers.ModelSerializer):\n')
             lines.append('    class Meta:\n')
-            lines.append(f'        model = {model}\n')
+            lines.append(f'        model = {model.capitalize()}\n')
             lines.append(f'        fields = "__all__"\n')
         lines.append('\n')
 
         with open(file_name, 'w') as file:
             file.writelines(lines)
 
-    def init_views(self, file_name: str, dicts: str, tbls: str) -> None:
-        models = (" ").join(
-            ['Documents', dicts.capitalize(), tbls.capitalize()]).split()
+    def init_views(self, file_name: str, dicts: list, tbls: list) -> None:
+        models = ('Documents', *dicts, *tbls)
         lines = []
         lines.append('from rest_framework import viewsets\n')
         lines.append('from .models import *\n')
         lines.append('from .serializers import *\n')
         for model in models:
-            lines.append(f'\n\nclass {model}ViewSet(viewsets.ModelViewSet):\n')
-            lines.append(f'    queryset = {model}.objects.all()\n')
-            lines.append(f'    serializer_class = {model}Serializer\n')
+            lines.append(
+                f'\n\nclass {model.capitalize()}ViewSet(viewsets.ModelViewSet):\n')
+            lines.append(
+                f'    queryset = {model.capitalize()}.objects.all()\n')
+            lines.append(
+                f'    serializer_class = {model.capitalize()}Serializer\n')
         lines.append('\n')
 
         with open(file_name, 'w') as file:
             file.writelines(lines)
 
-    def init_urls(self, file_name: str, dicts: str, tbls: str) -> None:
-        models = (" ").join(
-            ['Documents', dicts.capitalize(), tbls.capitalize()]).split()
+    def init_urls(self, file_name: str, dicts: list, tbls: list) -> None:
+        models = ('Documents', *dicts, *tbls)
         lines = []
         lines.append('from rest_framework import routers\n')
         lines.append('from .views import *\n')
         lines.append('\nrouter = routers.SimpleRouter()\n')
         for model in models:
             lines.append(
-                f"router.register(r'{model.lower()}', {model}ViewSet)\n")
+                f"router.register(r'{model.lower()}', {model.capitalize()}ViewSet)\n")
         lines.append('\nurlpatterns = router.urls\n')
         lines.append('\n')
 
         with open(file_name, 'w') as file:
             file.writelines(lines)
 
-    def init_admin(self, file_name: str, dicts: str, tbls: str) -> None:
-        models = (" ").join(
-            ['Documents', dicts.capitalize(), tbls.capitalize()]).split()
+    def init_admin(self, file_name: str, dicts: list, tbls: list) -> None:
         lines = []
         lines.append("from django.contrib import admin\n")
         lines.append("from .models import *\n")
@@ -219,18 +221,18 @@ class Command(BaseCommand):
         lines.append("        'changed_at',\n")
         lines.append("        'changed_user'\n")
         lines.append(")\n")
-        for model in dicts.capitalize().split():
+        for model in dicts:
             lines.append(
-                f"\n\nclass {model}Admin(admin.ModelAdmin):\n")
+                f"\n\nclass {model.capitalize()}Admin(admin.ModelAdmin):\n")
             lines.append("    list_display = (\n")
             lines.append("        'id',\n")
             lines.append("        'title',\n")
             lines.append("        'is_enable',\n")
             lines.append("    )\n\n")
 
-        for model in tbls.capitalize().split():
+        for model in tbls:
             lines.append(
-                f"\n\nclass {model}Admin(admin.ModelAdmin):\n")
+                f"\n\nclass {model.capitalize()}Admin(admin.ModelAdmin):\n")
             lines.append("    list_display = (\n")
             lines.append("        'id',\n")
             fields = Field.objects.filter(group__table_name=model.lower())
@@ -238,14 +240,16 @@ class Command(BaseCommand):
                 lines.append(f"        '{field.field_name.lower()}',\n")
             lines.append("    )\n\n")
 
+        models = ('Documents', *dicts, *tbls)
         for model in models:
-            lines.append(f"admin.site.register({model}, {model}Admin)\n")
+            lines.append(
+                f"admin.site.register({model.capitalize()}, {model.capitalize()}Admin)\n")
         lines.append("\n")
 
         with open(file_name, 'w') as file:
             file.writelines(lines)
 
-    def generate_dictionaries(self) -> str:
+    def generate_dictionaries(self) -> list:
         dictionaries = Dictionary.objects.all()
 
         dict_tables = []
@@ -255,9 +259,9 @@ class Command(BaseCommand):
                 self.create_dictionary_table(table_name)
             dict_tables.append(table_name)
 
-        return (" ").join(dict_tables)
+        return dict_tables
 
-    def generate_databases(self) -> str:
+    def generate_databases(self) -> list:
         tbls: dict = self.get_tables()
 
         for tbl in tbls.keys():
@@ -271,16 +275,50 @@ class Command(BaseCommand):
                         if not self.check_same_column(tbl, fld):
                             self.alter_column(tbl, fld)
 
-        return (" ").join(tbls.keys())
+        return tbls.keys()
+
+    def set_structure_db(self) -> None:
+        dbs = Database.objects.all()
+        for db in dbs:
+            serializer = DatabaseSerializer(db)
+            db.struct = serializer.data
+            db.save()
+
+    def clean_files(self):
+        for file_name in os.listdir(self.MIGRATIONS_DIR):
+            full_name = self.MIGRATIONS_DIR + file_name
+            if os.path.isfile(full_name) and file_name != '__init__.py':
+                os.remove(full_name)
+
+        with open(self.ADMIN_FILE, 'w') as file:
+            file.write('')
+
+        with open(self.URLS_FILE, 'w') as file:
+            file.writelines('from rest_framework import routers\n')
+            file.writelines('router = routers.SimpleRouter()\n')
+            file.writelines('urlpatterns = router.urls\n')
+
+        with open(self.VIEWS_FILE, 'w') as file:
+            file.write('')
+
+        with open(self.SERIALIZERS_FILE, 'w') as file:
+            file.write('')
+
+        with open(self.MODELS_FILE, 'w') as file:
+            file.write('')
 
     def handle(self, *args: Any, **kwargs: Any) -> None:
         """Handles generate data"""
 
-        dicts = self.generate_dictionaries()
-        tbls = self.generate_databases()
+        # self.clean_files()
 
-        self.init_models(self.MODELS_FILE, dicts, tbls)
-        self.init_serializers(self.SERIALIZERS_FILE, dicts, tbls)
-        self.init_views(self.VIEWS_FILE, dicts, tbls)
-        self.init_urls(self.URLS_FILE, dicts, tbls)
-        self.init_admin(self.ADMIN_FILE, dicts, tbls)
+        # dicts = self.generate_dictionaries()
+        # tbls = self.generate_databases()
+
+        # self.init_models(self.MODELS_FILE, dicts, tbls)
+        # self.init_serializers(self.SERIALIZERS_FILE, dicts, tbls)
+        # self.init_views(self.VIEWS_FILE, dicts, tbls)
+        # self.init_urls(self.URLS_FILE, dicts, tbls)
+        # self.init_admin(self.ADMIN_FILE, dicts, tbls)
+
+        self.set_structure_db()

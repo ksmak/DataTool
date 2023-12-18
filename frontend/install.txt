@@ -1,0 +1,3 @@
+npm install react-router-dom@6
+
+npm install --save-dev @babel/plugin-proposal-private-property-in-object
