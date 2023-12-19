@@ -1,5 +1,24 @@
 from django.db import models
 
+from django.contrib.auth import get_user_model
+
+
+class UserRole(models.Model):
+    """UserRole model"""
+
+    title = models.CharField(
+        verbose_name='наименование',
+        max_length=200,
+        unique=True
+    )
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = 'роль пользователя',
+        verbose_name_plural = 'роли пользователей'
+
 
 class Department(models.Model):
     """Department model"""
@@ -356,3 +375,19 @@ class Converter(models.Model):
         ordering = (
             '-pos',
         )
+
+
+class UserProfile(models.Model):
+    """UserProfile model"""
+
+    user = models.ForeignKey(
+        verbose_name='пользователь',
+        to=get_user_model(),
+        on_delete=models.RESTRICT
+    )
+
+    role = models.ForeignKey(
+        verbose_name='роль',
+        to=UserRole,
+        on_delete=models.RESTRICT
+    )

@@ -129,6 +129,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
 ]
 
+CORS_ALLOW_CREDENTIALS = True
+
 # Shell plus
 SHELL_PLUS = "ipython"
 SHELL_PLUS_PRINT_SQL = True
