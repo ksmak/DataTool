@@ -3,6 +3,7 @@ import LoginPage from "./components/UI/pages/LoginPage";
 import MaintPage from "./components/UI/pages/MainPage";
 import { AuthProvider, ProtectedRouter } from "./lib/auth";
 import { MetaProvider } from "./lib/meta";
+import InfoPage from "./components/UI/pages/InfoPage";
 
 
 export default function App() {
@@ -15,6 +16,11 @@ export default function App() {
               <Route path="/" element={
                 <ProtectedRouter>
                   <MaintPage />
+                </ProtectedRouter>
+              } />
+              <Route path="/item/:form_id" element={
+                <ProtectedRouter>
+                  <InfoPage />
                 </ProtectedRouter>
               } />
               <Route path="login" element={<LoginPage />} />

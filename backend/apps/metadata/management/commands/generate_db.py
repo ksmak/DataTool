@@ -27,7 +27,8 @@ class Command(BaseCommand):
     ADMIN_FILE = 'apps/main/admin.py'
 
     def check_exists_table(self, table_name: str) -> bool:
-        sql = f"SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = '{table_name}')"
+        sql = (f"SELECT EXISTS (SELECT 1 FROM information_schema.tables"
+               f" WHERE table_name = '{table_name}')")
         with connection.cursor() as cursor:
             cursor.execute(sql)
             row = cursor.fetchone()
@@ -35,15 +36,18 @@ class Command(BaseCommand):
 
     def check_exists_column(self, table_name: str, column_name: str) -> bool:
         sql = (f"SELECT EXISTS (SELECT 1 FROM information_schema.columns "
-               f"WHERE table_name = '{table_name}' and column_name = '{column_name}')")
+               f" WHERE table_name = '{table_name}'"
+               f" and column_name = '{column_name}')")
         with connection.cursor() as cursor:
             cursor.execute(sql)
             row = cursor.fetchone()
             return row[0]
 
     def check_same_column(self, table_name: str, fld: dict) -> bool:
-        sql = (f"SELECT data_type, character_maximum_length, numeric_precision FROM information_schema.columns "
-               f"WHERE table_name = '{table_name}' and column_name = '{fld.field_name.lower()}'")
+        sql = (f"SELECT data_type, character_maximum_length, numeric_precision"
+               f" FROM information_schema.columns "
+               f" WHERE table_name = '{table_name}'"
+               f" and column_name = '{fld.field_name.lower()}'")
         with connection.cursor() as cursor:
             cursor.execute(sql)
             row = cursor.fetchone()
@@ -78,20 +82,21 @@ class Command(BaseCommand):
         if fld.field_type == 'text' or fld.field_type == 'cyrillic':
             return f"character varying({fld.len})"
         elif fld.field_type == 'int':
-            return f"integer"
+            return "integer"
         elif fld.field_type == 'bigint' or fld.field_type == 'dict':
-            return f"bigint"
+            return "bigint"
         elif fld.field_type == 'numeric':
             return f"numeric({fld.precision})"
         elif fld.field_type == 'date':
-            return f"date"
+            return "date"
         elif fld.field_type == 'time':
-            return f"time without time zone"
+            return "time without time zone"
         elif fld.field_type == 'timestamp':
-            return f"timestamp"
+            return "timestamp"
         else:
             raise Exception(
-                f'Unknown field type for field: {fld.field_name} type: {fld.field_type}')
+                f"Unknown field type for field:"
+                f" {fld.field_name} type: {fld.field_type}")
 
     def get_tables(self) -> dict:
         tbls = {}
@@ -107,7 +112,10 @@ class Command(BaseCommand):
                     tbls[table_name]['fields_sql'] = []
                 fields = Field.objects.filter(group=grp.id)
                 for fld in fields:
-                    field_sql = f"{fld.field_name.lower()} {self.get_field_type(fld)}"
+                    field_sql = (
+                        f"{fld.field_name.lower()}"
+                        f" {self.get_field_type(fld)}"
+                    )
                     tbls[table_name]['fields_sql'].append(field_sql)
                     tbls[table_name]['fields'].append(fld)
         return tbls
@@ -122,20 +130,33 @@ class Command(BaseCommand):
         field_name = fld.field_name.lower()
         with connection.cursor() as cursor:
             # 1 add temp column
-            sql = f"ALTER TABLE {table_name} ADD COLUMN temp_column {self.get_field_type(fld)}"
+            sql = f"""
+            ALTER TABLE {table_name}
+             ADD COLUMN temp_column {self.get_field_type(fld)}
+            """
             cursor.execute(sql)
             # 2 update temp column
-            sql = (f"UPDATE {table_name} SET temp_column=CAST({field_name} AS {self.get_field_type(fld)})"
-                   f" WHERE {field_name} IS NOT NULL")
+            sql = f"""
+            UPDATE {table_name} SET
+             temp_column=CAST({field_name} AS {self.get_field_type(fld)})
+             WHERE {field_name} IS NOT NULL
+            """
             cursor.execute(sql)
             # 3 drop old column
             sql = f"ALTER TABLE {table_name} DROP COLUMN {field_name}"
             cursor.execute(sql)
             # 4 rename temp column
-            sql = f"ALTER TABLE {table_name} RENAME COLUMN temp_column TO {field_name}"
+            sql = f"""
+            ALTER TABLE {table_name} RENAME COLUMN temp_column TO {field_name}
+            """
             cursor.execute(sql)
 
-    def replace_in_file(self, file_name: str, source: str, replace_str: str) -> None:
+    def replace_in_file(
+        self,
+        file_name: str,
+        source: str,
+        replace_str: str
+    ) -> None:
         with open(file_name, 'r') as file:
             filedata = file.read()
 
@@ -157,17 +178,23 @@ class Command(BaseCommand):
         os.system("python3 manage.py makemigrations main")
         os.system("python3 manage.py migrate main")
 
-    def init_serializers(self, file_name: str, dicts: list, tbls: list) -> None:
+    def init_serializers(
+        self,
+        file_name: str,
+        dicts: list,
+        tbls: list
+    ) -> None:
         models = ('Documents', *dicts, *tbls)
         lines = []
         lines.append('from rest_framework import serializers\n')
         lines.append('from .models import *\n')
         for model in models:
             lines.append(
-                f'\n\nclass {model.capitalize()}Serializer(serializers.ModelSerializer):\n')
+                f'\n\nclass {model.capitalize()}'
+                f'Serializer(serializers.ModelSerializer):\n')
             lines.append('    class Meta:\n')
             lines.append(f'        model = {model.capitalize()}\n')
-            lines.append(f'        fields = "__all__"\n')
+            lines.append('        fields = "__all__"\n')
         lines.append('\n')
 
         with open(file_name, 'w') as file:
@@ -181,7 +208,8 @@ class Command(BaseCommand):
         lines.append('from .serializers import *\n')
         for model in models:
             lines.append(
-                f'\n\nclass {model.capitalize()}ViewSet(viewsets.ModelViewSet):\n')
+                f'\n\nclass {model.capitalize()}'
+                f'ViewSet(viewsets.ModelViewSet):\n')
             lines.append(
                 f'    queryset = {model.capitalize()}.objects.all()\n')
             lines.append(
@@ -199,7 +227,8 @@ class Command(BaseCommand):
         lines.append('\nrouter = routers.SimpleRouter()\n')
         for model in models:
             lines.append(
-                f"router.register(r'{model.lower()}', {model.capitalize()}ViewSet)\n")
+                f"router.register(r'{model.lower()}', "
+                f"{model.capitalize()}ViewSet)\n")
         lines.append('\nurlpatterns = router.urls\n')
         lines.append('\n')
 
@@ -243,7 +272,8 @@ class Command(BaseCommand):
         models = ('Documents', *dicts, *tbls)
         for model in models:
             lines.append(
-                f"admin.site.register({model.capitalize()}, {model.capitalize()}Admin)\n")
+                f"admin.site.register({model.capitalize()}, "
+                f"{model.capitalize()}Admin)\n")
         lines.append("\n")
 
         with open(file_name, 'w') as file:
@@ -269,7 +299,10 @@ class Command(BaseCommand):
                 self.create_db_table(tbls[tbl])
             else:
                 for fld in tbls[tbl]['fields']:
-                    if not self.check_exists_column(tbl, fld.field_name.lower()):
+                    if not self.check_exists_column(
+                        tbl,
+                        fld.field_name.lower()
+                    ):
                         self.add_column(tbl, fld)
                     else:
                         if not self.check_same_column(tbl, fld):
@@ -310,15 +343,15 @@ class Command(BaseCommand):
     def handle(self, *args: Any, **kwargs: Any) -> None:
         """Handles generate data"""
 
-        # self.clean_files()
+        self.clean_files()
 
-        # dicts = self.generate_dictionaries()
-        # tbls = self.generate_databases()
+        dicts = self.generate_dictionaries()
+        tbls = self.generate_databases()
 
-        # self.init_models(self.MODELS_FILE, dicts, tbls)
-        # self.init_serializers(self.SERIALIZERS_FILE, dicts, tbls)
-        # self.init_views(self.VIEWS_FILE, dicts, tbls)
-        # self.init_urls(self.URLS_FILE, dicts, tbls)
-        # self.init_admin(self.ADMIN_FILE, dicts, tbls)
+        self.init_models(self.MODELS_FILE, dicts, tbls)
+        self.init_serializers(self.SERIALIZERS_FILE, dicts, tbls)
+        self.init_views(self.VIEWS_FILE, dicts, tbls)
+        self.init_urls(self.URLS_FILE, dicts, tbls)
+        self.init_admin(self.ADMIN_FILE, dicts, tbls)
 
         self.set_structure_db()

@@ -36,15 +36,16 @@ export interface IGroup {
     table_name: string,
 }
 
-export interface IForms {
+export interface IForm {
     id: number,
     pos: number,
     title: string,
     groups: IGroup[],
-    form_type: string
+    form_type: string,
+    access_type: string | null,
 }
 
-export interface IReports {
+export interface IReport {
     id: number,
     pos: number,
     title: string,
@@ -60,9 +61,14 @@ export interface IDatabase {
     id: number,
     pos: number,
     title: string,
-    forms: IForms[],
-    reports: IReports[],
+    forms: IForm[],
+    reports: IReport[],
     convertors: IConvertor[],
+}
+
+export interface IDb {
+    id: number,
+    title: string,
 }
 
 export interface IAuthContext {
@@ -70,9 +76,10 @@ export interface IAuthContext {
     isAuthenticated: boolean,
     login: (user: IUser, accessToken: string, refreshToken: string) => void,
     logout: () => void,
+    dbList: IDb[]
 }
 
 export interface IMetaContext {
-    db: IDatabase | null,
-    setDb: React.Dispatch<React.SetStateAction<IDatabase | null>> | null
+    database: IDatabase | null,
+    setDb: (db: IDatabase) => void,
 }

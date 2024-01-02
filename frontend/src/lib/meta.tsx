@@ -1,10 +1,9 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import { IDatabase, IMetaContext } from "../types/types";
-import api from "../api";
 
 const MetaContext = createContext<IMetaContext>({
-    db: null,
-    setDb: null,
+    database: null,
+    setDb: (db: IDatabase) => { }
 });
 
 export function useMeta() {
@@ -12,20 +11,15 @@ export function useMeta() {
 }
 
 export function MetaProvider({ children }: any) {
-    const [db, setDb] = useState<IDatabase | null>(null);
+    const [database, setDatabase] = useState<IDatabase | null>(null);
 
-    useEffect(() => {
-        api.datatool.getStructDb(1)
-            .then(resp => {
-                setDb(resp.data);
-            })
-            .catch(err => {
-                console.log(err.message);
-            })
-    }, []);
+    function setDb(db: IDatabase) {
+        setDatabase(db);
+        localStorage.setItem('db', String(db.id));
+    }
 
     const meta = {
-        db,
+        database,
         setDb
     }
 

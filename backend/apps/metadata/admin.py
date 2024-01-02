@@ -48,7 +48,8 @@ class GroupAdmin(admin.ModelAdmin):
 class FieldAdmin(admin.ModelAdmin):
     """Field admin"""
     list_display = ('group', 'pos', 'title', 'field_name', 'field_type', 'len',
-                    'is_key', 'is_visible', 'is_enable', 'is_require', 'precision', 'is_duplicate')
+                    'is_key', 'is_visible', 'is_enable', 'is_require',
+                    'precision', 'is_duplicate')
     list_display_links = ('group', 'title')
     ordering = ('-group', 'pos')
     list_filter = ('group', )
@@ -56,9 +57,10 @@ class FieldAdmin(admin.ModelAdmin):
 
 class FindFieldAdmin(admin.ModelAdmin):
     """FindField admin"""
-    list_display = ('pos', 'title', 'field')
-    list_display_links = ('title', 'field')
-    ordering = ('pos', )
+    list_display = ('pos', 'title', 'form', 'field')
+    list_display_links = ('title', 'form', 'field')
+    ordering = ('form', 'pos')
+    list_filter = ('form', )
 
 
 admin.site.register(Department, DepartmentAdmin)

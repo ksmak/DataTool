@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import MyUser
+from .models import MyUser, Role, UserRole, DatabaseAccess, FormAccess
 
 
 class MyUserAdmin(UserAdmin):
@@ -78,4 +78,26 @@ class MyUserAdmin(UserAdmin):
     ordering = ('username', )
 
 
+class UserRoleAdmin(admin.ModelAdmin):
+    """UserRole admin"""
+    list_display = ('user', 'role')
+    list_display_links = ('user', 'role')
+
+
+class DatabaseAccessAdmin(admin.ModelAdmin):
+    """DatabaseAccess admin"""
+    list_display = ('role', 'database')
+    list_display_links = ('role', 'database')
+
+
+class FormAccessAdmin(admin.ModelAdmin):
+    """FormAccess admin"""
+    list_display = ('role', 'form', 'access_type')
+    list_display_links = ('role', 'form', 'access_type')
+
+
 admin.site.register(MyUser, MyUserAdmin)
+admin.site.register(Role)
+admin.site.register(UserRole, UserRoleAdmin)
+admin.site.register(DatabaseAccess, DatabaseAccessAdmin)
+admin.site.register(FormAccess, FormAccessAdmin)

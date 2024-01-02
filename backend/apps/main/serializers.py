@@ -8,20 +8,32 @@ class DocumentsSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class RegionSerializer(serializers.ModelSerializer):
+class CountriesSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Region
+        model = Countries
         fields = "__all__"
 
 
-class AddressSerializer(serializers.ModelSerializer):
+class NationalsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Address
+        model = Nationals
+        fields = "__all__"
+
+
+class RegistrationstateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Registrationstate
         fields = "__all__"
 
 
 class AsbSerializer(serializers.ModelSerializer):
     class Meta:
         model = Asb
+        fields = "__all__"
+
+
+class AddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Address
         fields = "__all__"
 

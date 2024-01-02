@@ -6,6 +6,7 @@ from .models import (
     Form,
     Group,
     Field,
+    FindField,
     Report,
     Converter
 )
@@ -35,10 +36,18 @@ class FieldSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class FindFieldSerializer(serializers.ModelSerializer):
+    """Field serializer"""
+
+    class Meta:
+        model = FindField
+        fields = '__all__'
+
+
 class GroupSerializer(serializers.ModelSerializer):
     """Group serializer"""
 
-    fields = serializers.SerializerMethodField()
+    fields = FieldSerializer(many=True)
 
     class Meta:
         model = Group
@@ -48,18 +57,15 @@ class GroupSerializer(serializers.ModelSerializer):
             'title',
             'is_multy',
             'table_name',
-            'fields2'
+            'fields',
         )
-
-    def get_fields(self, instance):
-        fields = instance.fields.all().order_by("-pos")
-        return FieldSerializer(fields, many=True).data
 
 
 class FormSerializer(serializers.ModelSerializer):
     """Form serializer"""
 
-    groups = serializers.SerializerMethodField()
+    groups = GroupSerializer(many=True)
+    find_fields = FindFieldSerializer(many=True)
 
     class Meta:
         model = Form
@@ -69,11 +75,8 @@ class FormSerializer(serializers.ModelSerializer):
             'title',
             'form_type',
             'groups',
+            'find_fields',
         )
-
-    def get_groups(self, instance):
-        groups = instance.groups.all().order_by("-pos")
-        return GroupSerializer(groups, many=True).data
 
 
 class DatabaseSerializer(serializers.ModelSerializer):
@@ -91,7 +94,7 @@ class DatabaseSerializer(serializers.ModelSerializer):
             'title',
             'forms',
             'reports',
-            'converters'
+            'converters',
         )
 
 

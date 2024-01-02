@@ -1,11 +1,18 @@
-import { AxiosInstance } from "axios"
+import axios, { AxiosInstance } from "axios"
 
 export default function datatoolModule(instance: AxiosInstance) {
     return {
-        getStructDb(db_id: number) {
-            return instance({
+        getDbList() {
+            return axios.get(`${process.env.REACT_APP_HOST_API}api/meta/db/`)
+        },
+
+        getDb(id: number, accessToken: string) {
+            return axios({
                 method: 'get',
-                url: `api/databases/${db_id}/`,
+                url: `${process.env.REACT_APP_HOST_API}api/meta/db/${id}`,
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                }
             })
         },
     }

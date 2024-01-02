@@ -24,40 +24,63 @@ class Documents(models.Model):
         db_table = 'documents'
 
 
-class Region(models.Model):
+class Countries(models.Model):
     id = models.BigAutoField(primary_key=True)
     title = models.TextField()
     is_enable = models.BooleanField()
 
     class Meta:
         managed = True
-        db_table = 'region'
+        db_table = 'countries'
 
 
-class Address(models.Model):
+class Nationals(models.Model):
     id = models.BigAutoField(primary_key=True)
-    doc = models.ForeignKey(Documents, models.DO_NOTHING, blank=True, null=True)
-    lst = models.SmallIntegerField()
-    punkt = models.CharField(max_length=150, blank=True, null=True)
-    raion = models.CharField(max_length=150, blank=True, null=True)
-    obl = models.BigIntegerField(blank=True, null=True)
+    title = models.TextField()
+    is_enable = models.BooleanField()
 
     class Meta:
         managed = True
-        db_table = 'address'
+        db_table = 'nationals'
+
+
+class Registrationstate(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    title = models.TextField()
+    is_enable = models.BooleanField()
+
+    class Meta:
+        managed = True
+        db_table = 'registrationstate'
 
 
 class Asb(models.Model):
     id = models.BigAutoField(primary_key=True)
     doc = models.ForeignKey(Documents, models.DO_NOTHING, blank=True, null=True)
     lst = models.SmallIntegerField()
-    obl = models.BigIntegerField(blank=True, null=True)
-    dr = models.DateField(blank=True, null=True)
-    ot = models.CharField(max_length=50, blank=True, null=True)
-    im = models.CharField(max_length=50, blank=True, null=True)
-    fam = models.CharField(max_length=50, blank=True, null=True)
+    surname = models.CharField(max_length=50, blank=True, null=True)
+    name = models.CharField(max_length=50, blank=True, null=True)
+    patronymic = models.CharField(max_length=50, blank=True, null=True)
+    birth_date = models.DateField(blank=True, null=True)
     iin = models.BigIntegerField(blank=True, null=True)
+    citizen = models.BigIntegerField(blank=True, null=True)
+    nation = models.BigIntegerField(blank=True, null=True)
 
     class Meta:
         managed = True
         db_table = 'asb'
+
+
+class Address(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    doc = models.ForeignKey(Documents, models.DO_NOTHING, blank=True, null=True)
+    lst = models.SmallIntegerField()
+    region = models.CharField(max_length=150, blank=True, null=True)
+    district = models.CharField(max_length=150, blank=True, null=True)
+    punkt = models.CharField(max_length=150, blank=True, null=True)
+    status = models.BigIntegerField(blank=True, null=True)
+    registration_date = models.DateField(blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'address'

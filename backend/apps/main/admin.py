@@ -15,7 +15,7 @@ class DocumentsAdmin(admin.ModelAdmin):
 )
 
 
-class RegionAdmin(admin.ModelAdmin):
+class CountriesAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'title',
@@ -24,9 +24,20 @@ class RegionAdmin(admin.ModelAdmin):
 
 
 
-class AddressAdmin(admin.ModelAdmin):
+class NationalsAdmin(admin.ModelAdmin):
     list_display = (
         'id',
+        'title',
+        'is_enable',
+    )
+
+
+
+class RegistrationstateAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'title',
+        'is_enable',
     )
 
 
@@ -34,10 +45,31 @@ class AddressAdmin(admin.ModelAdmin):
 class AsbAdmin(admin.ModelAdmin):
     list_display = (
         'id',
+        'surname',
+        'name',
+        'patronymic',
+        'birth_date',
+        'iin',
+        'citizen',
+        'nation',
+    )
+
+
+
+class AddressAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'region',
+        'district',
+        'punkt',
+        'status',
+        'registration_date',
     )
 
 admin.site.register(Documents, DocumentsAdmin)
-admin.site.register(Region, RegionAdmin)
-admin.site.register(Address, AddressAdmin)
+admin.site.register(Countries, CountriesAdmin)
+admin.site.register(Nationals, NationalsAdmin)
+admin.site.register(Registrationstate, RegistrationstateAdmin)
 admin.site.register(Asb, AsbAdmin)
+admin.site.register(Address, AddressAdmin)
 

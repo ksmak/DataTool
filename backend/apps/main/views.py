@@ -8,17 +8,27 @@ class DocumentsViewSet(viewsets.ModelViewSet):
     serializer_class = DocumentsSerializer
 
 
-class RegionViewSet(viewsets.ModelViewSet):
-    queryset = Region.objects.all()
-    serializer_class = RegionSerializer
+class CountriesViewSet(viewsets.ModelViewSet):
+    queryset = Countries.objects.all()
+    serializer_class = CountriesSerializer
 
 
-class AddressViewSet(viewsets.ModelViewSet):
-    queryset = Address.objects.all()
-    serializer_class = AddressSerializer
+class NationalsViewSet(viewsets.ModelViewSet):
+    queryset = Nationals.objects.all()
+    serializer_class = NationalsSerializer
+
+
+class RegistrationstateViewSet(viewsets.ModelViewSet):
+    queryset = Registrationstate.objects.all()
+    serializer_class = RegistrationstateSerializer
 
 
 class AsbViewSet(viewsets.ModelViewSet):
     queryset = Asb.objects.all()
     serializer_class = AsbSerializer
+
+
+class AddressViewSet(viewsets.ModelViewSet):
+    queryset = Address.objects.all()
+    serializer_class = AddressSerializer
 

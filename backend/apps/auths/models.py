@@ -5,7 +5,7 @@ from django.contrib.auth.models import (
     PermissionsMixin
 )
 from django.core.exceptions import ValidationError
-from metadata.models import Department
+from metadata.models import Department, Database, Form
 
 
 class MyUserManager(BaseUserManager):
@@ -112,4 +112,116 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = 'пользователи'
         ordering = (
             '-created_at',
+        )
+
+
+class Role(models.Model):
+    """Role model"""
+
+    name = models.CharField(
+        verbose_name='наименование',
+        max_length=150
+    )
+
+    def __str__(self) -> str:
+        return self.name
+
+    class Meta:
+        verbose_name = 'роль'
+        verbose_name_plural = 'роли'
+        ordering = (
+            'name',
+        )
+
+
+class UserRole(models.Model):
+    """UserRole model"""
+
+    user = models.ForeignKey(
+        verbose_name='пользователь',
+        to=MyUser,
+        on_delete=models.RESTRICT
+    )
+
+    role = models.ForeignKey(
+        verbose_name='роль',
+        to=Role,
+        on_delete=models.RESTRICT
+    )
+
+    def __str__(self) -> str:
+        return f"{self.user} {self.role}"
+
+    class Meta:
+        verbose_name = 'роли пользователя'
+        verbose_name_plural = 'роли пользователей'
+        ordering = (
+            'user',
+            'role',
+        )
+
+
+class DatabaseAccess(models.Model):
+    """Database access model"""
+
+    role = models.ForeignKey(
+        verbose_name='роль',
+        to=Role,
+        on_delete=models.RESTRICT
+    )
+
+    database = models.ForeignKey(
+        verbose_name='база данных',
+        to=Database,
+        on_delete=models.RESTRICT
+    )
+
+    def __str__(self) -> str:
+        return f"{self.role} {self.database}"
+
+    class Meta:
+        verbose_name = 'доступ к БД'
+        verbose_name_plural = 'доступ к БД'
+        ordering = (
+            'role',
+        )
+
+
+class FormAccess(models.Model):
+    """Form access model"""
+
+    INPUT_FORM_ACCESS_TYPE = [
+        ('read', 'чтение'),
+        ('write', 'запись'),
+        ('delete', 'удаление'),
+    ]
+
+    role = models.ForeignKey(
+        verbose_name='роль',
+        to=Role,
+        on_delete=models.RESTRICT
+    )
+
+    form = models.ForeignKey(
+        verbose_name='форма',
+        to=Form,
+        on_delete=models.RESTRICT
+    )
+
+    access_type = models.CharField(
+        verbose_name='тип доступа',
+        max_length=10,
+        choices=INPUT_FORM_ACCESS_TYPE,
+        null=True,
+        blank=True
+    )
+
+    def __str__(self) -> str:
+        return f"{self.role} {self.form}"
+
+    class Meta:
+        verbose_name = 'доступ к формам'
+        verbose_name_plural = 'доступ к формам'
+        ordering = (
+            'role',
         )

@@ -10,7 +10,7 @@ export default function UserInfo() {
             <div>
                 {user?.fullName}
             </div>
-            <div className="flex flex-row justify-center gap-2 lowercase">
+            <div className="flex flex-row justify-center gap-2 lowercase underline hover:cursor-pointer">
                 <div>
                     {t('profile')}
                 </div>

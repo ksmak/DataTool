@@ -5,35 +5,38 @@ import Logo from "../elements/Logo";
 import Menu from "../elements/Menu";
 import UserInfo from "../elements/UserInfo";
 import Language from "../elements/Language";
+import { useTranslation } from "react-i18next";
 
 export default function NavigationPanel() {
+    const { t } = useTranslation();
     const [menu, setMenu] = useState<IMenu[]>([]);
-    const { db } = useMeta();
+    const { database } = useMeta();
     const initMenu = (db: IDatabase | null) => {
         let mnu: IMenu[] = [];
         mnu.push({
             id: 1,
-            title: "База данных",
+            title: t('database'),
             items: [],
         });
         mnu.push({
             id: 2,
-            title: "Ввод информации",
+            title: t('menu_info'),
             items: [],
         });
         mnu.push({
             id: 3,
-            title: "Поиск информации",
+            title: t('menu_search'),
             items: [],
         });
         db?.forms.forEach(form => {
-            if (form.form_type === 'input_form') {
+            if (form.form_type === 'input_form' && form.access_type !== null) {
                 mnu[1].items?.push({
                     id: form.id,
-                    title: form.title
+                    title: form.title,
+                    link: `/item/${form.id}`
                 })
             }
-            if (form.form_type === 'search_form') {
+            if (form.form_type === 'search_form' && form.access_type !== null) {
                 mnu[2].items?.push({
                     id: form.id,
                     title: form.title
@@ -42,7 +45,7 @@ export default function NavigationPanel() {
         })
         mnu.push({
             id: 4,
-            title: "Справка",
+            title: t('menu_help'),
             items: [],
         });
 
@@ -50,10 +53,10 @@ export default function NavigationPanel() {
     }
 
     useEffect(() => {
-        initMenu(db);
-        console.log(db);
+        initMenu(database);
+        console.log(database);
         console.log(menu);
-    }, [db]);
+    }, [database]);
 
     return (
         <div className="flex flex-row justify-between items-center border-b-2 py-2 px-4 bg-primary mb-4">
