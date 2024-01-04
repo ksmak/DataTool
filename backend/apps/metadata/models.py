@@ -210,12 +210,12 @@ class Field(models.Model):
 
     is_visible = models.BooleanField(
         verbose_name='видимость',
-        default=False
+        default=True
     )
 
     is_enable = models.BooleanField(
         verbose_name='доступен',
-        default=False
+        default=True
     )
 
     is_require = models.BooleanField(

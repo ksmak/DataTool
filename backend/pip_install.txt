@@ -1,0 +1,1 @@
+pip install Django djangorestframework djangorestframework-simplejwt python-dotenv django-cors-headers django-debug-toolbar django-extensions
